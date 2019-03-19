@@ -55,7 +55,7 @@ class AclTest extends TestCase
         $user = $this->admin;
 
         $data_store = [
-            'name' => 'Test-Permission',
+            'name' => 'Test-Permission-1234',
             'roles' => 'user', // 'user, administrator'
             'users' => '1,2', // '1,2,3'
         ];
@@ -73,7 +73,7 @@ class AclTest extends TestCase
         ]);
 
         $data_update = [
-            'name' => 'Test-Permission-Edit',
+            'name' => 'Test-Permission-Edit-1234',
             'roles' => 'superadmin,user', // 'write-user, read-user'
             'users' => '2', // '1,2,3'
         ];
@@ -111,7 +111,7 @@ class AclTest extends TestCase
         $user = $this->admin;
 
         $data_store = [
-            'name' => 'Test Role',
+            'name' => 'Test Role 1234',
             'permissions' => 'read-users,update-users,delete-users', // 'write-user, read-user'
             'users' => '1,2', // '1,2,3'
         ];
@@ -129,7 +129,7 @@ class AclTest extends TestCase
         ]);
 
         $data_update = [
-            'name' => 'Test Role Edit',
+            'name' => 'Test Role Edit 1234',
             'permissions' => 'read-users,delete-users', // 'write-user, read-user'
             'users' => '2', // '1,2,3'
         ];
@@ -181,7 +181,7 @@ class AclTest extends TestCase
         $user = $this->admin;
 
         $data_store = [
-            'group' => 'Test Group',
+            'group' => 'Test Group 1234',
             'id_parent' => null, // '1,2,3'
         ];
 
@@ -199,7 +199,7 @@ class AclTest extends TestCase
         ]);
 
         $data_update = [
-            'group' => 'Test Group Update',
+            'group' => 'Test Group Update 1234',
             'id_parent' => 2, // '1,2,3'
         ];
         // update
