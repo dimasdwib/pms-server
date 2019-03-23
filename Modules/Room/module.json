@@ -1,0 +1,14 @@
+{
+    "name": "Room",
+    "alias": "room",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Room\\Providers\\RoomServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

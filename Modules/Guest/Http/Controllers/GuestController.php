@@ -24,7 +24,7 @@ class GuestController extends Controller
         }
         
         $guests = Guest::paginate($limit);
-        return response()->json($guests);
+        return GuestResource::collection($guests);
     }
 
     /**
