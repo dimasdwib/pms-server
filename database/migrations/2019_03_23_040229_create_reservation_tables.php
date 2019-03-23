@@ -33,6 +33,7 @@ class CreateReservationTables extends Migration
             $table->timestamps();
 
             $table->foreign('id_reservation')->references('id_reservation')->on('reservations')->onDelete('cascade');
+            $table->foreign('id_room')->references('id_room')->on('rooms');
         });
 
         // reservation room guest
@@ -42,11 +43,12 @@ class CreateReservationTables extends Migration
             $table->unsignedInteger('id_guest');
             $table->date('date_arrival');
             $table->date('date_departure');
-            $table->dateTime('date_checkin');
-            $table->dateTime('date_checkout');
+            $table->dateTime('date_checkin')->nullable();
+            $table->dateTime('date_checkout')->nullable();
             $table->timestamps();
             
             $table->foreign('id_reservation_room')->references('id_reservation_room')->on('reservation_rooms')->onDelete('cascade');
+            $table->foreign('id_guest')->references('id_guest')->on('guests');
         });
 
         // ------------------------------------------------------------------------------------------------------------------------

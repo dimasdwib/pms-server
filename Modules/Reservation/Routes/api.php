@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +11,28 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/reservation', function (Request $request) {
-    return $request->user();
-});
+/**
+ * Resources
+ * POST     /reservation
+ * GET      /reservation
+ * GET      /reservation/{id}
+ * PUT      /reservation/{id}
+ * DELETE   /reservation/{id}
+ */
+
+RouteApi::version('v1', function() {
+    RouteApi::group(['prefix' => 'reservation', 'namespace' => 'Modules\Reservation\Http\Controllers'], function() {
+
+        RouteApi::group(['middleware' => 'jwt.auth'], function() {
+
+            // resources
+            RouteApi::post('/', 'ReservationController@store');
+            RouteApi::get('/', 'ReservationController@index');
+            RouteApi::get('/{id}', 'ReservationController@show');
+            RouteApi::put('/{id}', 'ReservationController@update');
+            RouteApi::delete('/{id}', 'ReservationController@destroy');
+
+        });
+
+    });
+ });
