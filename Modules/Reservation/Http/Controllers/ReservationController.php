@@ -9,7 +9,14 @@ use App\Models\Room\Room;
 use App\Models\Reservation\Reservation;
 use App\Models\Reservation\ReservationRoom;
 use App\Models\Reservation\ReservationGuest;
+use App\Models\Reservation\ReservationGuestResource;
 use App\Models\Reservation\ReservationResource;
+use App\Models\Reservation\ReservationRoomResource;
+use App\Models\Transaction\RoomCharge;
+use App\Models\Transaction\Bill;
+use App\Models\Transaction\ReservationBill;
+use App\Models\Rate\Rate;
+use DB;
 
 class ReservationController extends Controller
 {
@@ -36,8 +43,8 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
 
-        $this->validate([
-            'id_booker' => 'required|numeric',
+        $request->validate([
+            'booker' => 'required',
             'adult' => 'numeric',
             'child' => 'numeric',
             'date_arrival' =>'required|date',
@@ -45,39 +52,61 @@ class ReservationController extends Controller
         ]);
 
         $reservation = new Reservation;
-        $reservation->id_booker = $request->id_booker;
-        $reservation->status = $request->status;
+        $reservation->id_booker = $request->booker['id_guest'];
+        $reservation->status = $request->status == '' ? 'tentative' : $request->status;
         $reservation->note = $request->note;
         $reservation->adult = $request->adult;
         $reservation->child = $request->child;
         
         DB::beginTransaction();
+        $reservation->save();
 
-        $reservation_rooms = [];
         foreach($request->rooms as $room) {
-            $reservasion_room = new ReservationRoom(['id_room' => $room['id']]);
-
-            $room_guests = [];
+            $reservation_room = new ReservationRoom([
+                'id_room' => $room['id_room'],
+                'id_reservation' => $reservation->id_reservation    
+            ]);
+            $reservation_room->save();
             foreach($room['guests'] as $guest) {
                 $room_guest = new ReservationGuest([
                     'id_guest' => $guest['id_guest'],
+                    'id_reservation_room' => $reservation_room->id_reservation_room,
                     'date_arrival' => $request->date_arrival,
                     'date_departure' => $request->date_departure,
                 ]);
-                $room_guests[] = $room_guest;
+                $room_guest->save();
             }
 
-            $reservation_room->reservation_room_guests()->saveMany($room_guests);
-            $reservation_rooms[] = $reservasion_room;
+            // Insert room rate
+            $room_rate = $room['rate'];
+            $rate = Rate::where('id_rate', $room_rate['id_rate'])
+                    ->forReservation($request->date_arrival, $request->date_departure)
+                    ->first();
+            foreach($rate['charges'] as $charge) {
+                RoomCharge::create([
+                    'id_reservation_room_guest' => $room_guest->id_reservation_room_guest,
+                    'id_rate' => $rate['id_rate'],
+                    'amount_nett' => $charge['amount_nett'],
+                    'date' => $charge['date'],
+                ]);
+            }
         }
 
-        $reservation->reservation_rooms()->saveMany($reservation_rooms);
+        // create bill
+        $bill = new Bill;
+        $bill->id_guest = $reservation->id_booker;
+        $bill->save();
 
-        if ($reservation->save()) {
+        $reservation_bill = new ReservationBill;
+        $reservation_bill->id_reservation = $reservation->id_reservation;
+        $reservation_bill->id_bill = $bill->id_bill;
+        $reservation_bill->save();
+
+        if ($reservation->id_reservation) {
             DB::commit();
             return response()->json([
                 'message' => 'Reservation has been created successfully',
-                'bed' => new ReservationResource($bed),
+                'reservation' => new ReservationResource($reservation),
             ]);
         }
 
@@ -89,9 +118,12 @@ class ReservationController extends Controller
      * Show the specified resource.
      * @return Response
      */
-    public function show()
+    public function show($id)
     {
-        return view('reservation::show');
+        $reservation = Reservation::findOrFail($id);
+        $reservation = $reservation->detail();
+    
+        return $reservation;
     }
 
     /**
@@ -110,4 +142,57 @@ class ReservationController extends Controller
     public function destroy()
     {
     }
+
+    /**
+     * Get reservation room
+     * 
+     */
+    public function room($id_reservation_room)
+    {
+        $room = ReservationRoom::findOrFail($id_reservation_room);
+        return new ReservationRoomResource($room);
+    }
+
+    /**
+     * Checkin the guest
+     * 
+     */
+    public function checkin($id_reservation_room_guest)
+    {
+        $guest = ReservationGuest::findOrFail($id_reservation_room_guest);
+
+        DB::beginTransaction();
+        if ($guest->checkin()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Guest has been checked in successfully',
+                'guest' => new ReservationGuestResource($guest),
+            ]);
+        }
+
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
+
+    /**
+     * Checkout the guest
+     * 
+     */
+    public function checkout($id_reservation_room_guest)
+    {
+        $guest = ReservationGuest::findOrFail($id_reservation_room_guest);
+
+        DB::beginTransaction();
+        if ($guest->checkout()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Guest has been checked out successfully',
+                'guest' => new ReservationGuestResource($guest),
+            ]);
+        }
+
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
+    
 }

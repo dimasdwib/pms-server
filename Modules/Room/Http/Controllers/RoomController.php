@@ -7,6 +7,12 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Room\Room;
 use App\Models\Room\RoomResource;
+use App\Models\RoomType\RoomType;
+use App\Models\RoomType\RoomTypeResource;
+use App\Models\Rate\Rate;
+use App\Models\Rate\RateResource;
+use App\Models\Bed\Bed;
+use App\Models\Bed\BedResource;
 use DB;
 
 
@@ -33,6 +39,28 @@ class RoomController extends Controller
      */
     public function all() {
         return Room::all();
+    }
+
+    /**
+     * Display room and available
+     * @return Response JSON
+     */
+    public function available(Request $request) {
+
+        $request->validate([
+            'date_arrival' => 'required',
+            'date_departure' => 'required'
+        ]);
+
+        $date_arrival = $request->date_arrival;
+        $date_departure = $request->date_departure;
+
+        return response()->json([
+            'room_types' => RoomType::all(),
+            'beds' => Bed::all(),
+            'rooms' => Room::all(),
+            'rates' => Rate::forReservation($date_arrival, $date_departure),
+        ]);
     }
 
     /**

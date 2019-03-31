@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
  * Resources
  * POST     /room
  * GET      /room
+ * GET      /room/available
  * GET      /room/all
  * GET      /room/{id}
  * PUT      /room/{id}
@@ -31,6 +32,7 @@ RouteApi::version('v1', function() {
             // resources
             RouteApi::post('/', 'RoomController@store');
             RouteApi::get('/', 'RoomController@index');
+            RouteApi::get('/available', 'RoomController@available');
             RouteApi::get('/all', 'RoomController@all');
             RouteApi::get('/{id}', 'RoomController@show');
             RouteApi::put('/{id}', 'RoomController@update');

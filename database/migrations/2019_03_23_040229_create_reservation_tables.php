@@ -29,7 +29,7 @@ class CreateReservationTables extends Migration
         Schema::create('reservation_rooms', function (Blueprint $table) {
             $table->increments('id_reservation_room');
             $table->unsignedInteger('id_reservation');
-            $table->unsignedInteger('id_room');
+            $table->unsignedInteger('id_room')->nullable();
             $table->timestamps();
 
             $table->foreign('id_reservation')->references('id_reservation')->on('reservations')->onDelete('cascade');
@@ -66,6 +66,7 @@ class CreateReservationTables extends Migration
             $table->increments('id_reservation_bill');
             $table->unsignedInteger('id_reservation');
             $table->unsignedInteger('id_bill');
+            $table->enum('status', ['closed', 'open'])->default('closed');
             $table->timestamps();
             
             $table->foreign('id_bill')->references('id_bill')->on('bills')->onDelete('cascade');
@@ -78,6 +79,7 @@ class CreateReservationTables extends Migration
             $table->dateTime('date');
             $table->decimal('amount_nett', 19, 4)->default(0);
             $table->string('description');
+            $table->enum('type', ['db', 'cr']);
             $table->timestamps();
             
             $table->foreign('id_bill')->references('id_bill')->on('bills')->onDelete('cascade');
@@ -86,7 +88,7 @@ class CreateReservationTables extends Migration
 
         // reservation room charges
         Schema::create('room_charges', function (Blueprint $table) {
-            $table->increments('id_room_charges');
+            $table->increments('id_room_charge');
             $table->unsignedInteger('id_reservation_room_guest');
             $table->unsignedInteger('id_rate');
             $table->unsignedInteger('id_transaction')->nullable();

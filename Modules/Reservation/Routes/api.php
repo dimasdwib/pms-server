@@ -25,6 +25,13 @@ RouteApi::version('v1', function() {
 
         RouteApi::group(['middleware' => 'jwt.auth'], function() {
 
+            // reservation room
+            RouteApi::get('/room/{id_reservation_room}', 'ReservationController@room');
+
+            // reservation check in / check out
+            RouteApi::put('/checkin/{id_reservation_room_guest}', 'ReservationController@checkin');
+            RouteApi::put('/checkout/{id_reservation_room_guest}', 'ReservationController@checkout');
+
             // resources
             RouteApi::post('/', 'ReservationController@store');
             RouteApi::get('/', 'ReservationController@index');

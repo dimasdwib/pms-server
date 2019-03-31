@@ -17,6 +17,7 @@ class GuestSeeder extends Seeder
         $guest->email = 'JhonDoe@gmail.com';
         $guest->address = 'Jl. Sesama';
         $guest->title = 'mr';
+        $guest->phone = '082221234711';
         $guest->save();
 
         $guest = new Guest;
@@ -24,6 +25,7 @@ class GuestSeeder extends Seeder
         $guest->title = 'ms';
         $guest->email = 'Janedoe@gmail.com';
         $guest->address = 'Jl. Sesama II';
+        $guest->phone = '082221234222';
         $guest->save();
 
         $guest = new Guest;
@@ -31,6 +33,15 @@ class GuestSeeder extends Seeder
         $guest->title = 'mr';
         $guest->email = 'jbourne@gmail.com';
         $guest->address = 'Jl. Tiga Sesama';
+        $guest->phone = '081121989006';
+        $guest->save();
+
+        $guest = new Guest;
+        $guest->name = 'James Casey';
+        $guest->title = 'mr';
+        $guest->email = 'jamescaset@gmail.com';
+        $guest->address = 'Jl. Empat Sesama';
+        $guest->phone = '081121987706';
         $guest->save();
 
     }

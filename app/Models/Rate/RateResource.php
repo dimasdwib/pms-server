@@ -15,7 +15,7 @@ class RateResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id_rate,
+            'id_rate' => $this->id_rate,
             'room_type' => $this->room_type,
             'code' => $this->code,
             'name' => $this->name,
