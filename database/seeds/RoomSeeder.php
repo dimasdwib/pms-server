@@ -58,5 +58,50 @@ class RoomSeeder extends Seeder
         $room->description = null;
         $room->save();
 
+        $room = new Room;
+        $room->id_room_type = 1;
+        $room->id_bed = 3;
+        $room->id_floor = null;
+        $room->number = '106';
+        $room->phone = null;
+        $room->description = null;
+        $room->save();
+
+        $room = new Room;
+        $room->id_room_type = 1;
+        $room->id_bed = 3;
+        $room->id_floor = null;
+        $room->number = '107';
+        $room->phone = null;
+        $room->description = null;
+        $room->save();
+
+        $room = new Room;
+        $room->id_room_type = 1;
+        $room->id_bed = 3;
+        $room->id_floor = null;
+        $room->number = '108';
+        $room->phone = null;
+        $room->description = null;
+        $room->save();
+
+        $room = new Room;
+        $room->id_room_type = 1;
+        $room->id_bed = 3;
+        $room->id_floor = null;
+        $room->number = '109';
+        $room->phone = null;
+        $room->description = null;
+        $room->save();
+
+        $room = new Room;
+        $room->id_room_type = 1;
+        $room->id_bed = 3;
+        $room->id_floor = null;
+        $room->number = '110';
+        $room->phone = null;
+        $room->description = null;
+        $room->save();
+
     }
 }

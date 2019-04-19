@@ -33,6 +33,19 @@ class Reservation extends BaseModel
         return $this->hasMany('App\Models\Transaction\ReservationBill', 'id_reservation', 'id_reservation');
     }
 
+    public function setToDefinite()
+    {
+        $this->status = 'definite';
+        return $this->save();
+    }
+
+    public function number() 
+    {
+        $base = '000000';
+        $len = strlen($this->id_reservation);
+        return substr($base, 0, strlen($base) - $len).$this->id_reservation;
+    }
+
     public function detail()
     {   
 
@@ -61,7 +74,7 @@ class Reservation extends BaseModel
         return [
             'id_reservation' => $this->id_reservation,
             'booker' => $this->booker,
-            'number' => '00000'.$this->id_reservation,
+            'number' => $this->number(),
             'status' => $this->status,
             'note' => $this->note,
             'adult' => $this->adult,

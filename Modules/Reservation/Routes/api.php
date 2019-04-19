@@ -25,6 +25,9 @@ RouteApi::version('v1', function() {
 
         RouteApi::group(['middleware' => 'jwt.auth'], function() {
 
+            // in house
+            RouteApi::get('/inhouse', 'ReservationController@inhouse');
+
             // reservation room
             RouteApi::get('/room/{id_reservation_room}', 'ReservationController@room');
 

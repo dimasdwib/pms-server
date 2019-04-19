@@ -31,8 +31,18 @@ class GuestController extends Controller
      * Display all resource
      * @return Response
      */
-    public function all() {
-        return Guest::all();
+    public function all(Request $request) {
+        if ($request->search != '') {
+            $search = $request->search;
+            $guests = Guest::where('name', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%$search%")
+                        ->orWhere('phone', 'like', "%$search%")
+                        ->orWhere('idcard', 'like', "%$search%")
+                        ->get();
+            return GuestResource::collection($guests);
+        }
+
+        return GuestResource::collection(Guest::all());
     }
 
     /**

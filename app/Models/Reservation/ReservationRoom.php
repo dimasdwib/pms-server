@@ -23,6 +23,13 @@ class ReservationRoom extends BaseModel
         return $this->hasMany('App\Models\Reservation\ReservationGuest', 'id_reservation_room', 'id_reservation_room');
     }
 
+    public function scopeInHouse($query)
+    {   
+        return $query->join('reservation_room_guests', 'reservation_room_guests.id_reservation_room', '=', 'reservation_rooms.id_reservation_room')
+                     ->whereNotNull('date_checkin')
+                     ->whereNull('date_checkout');
+    }
+
     public function reservation() {
         return $this->belongsTo('App\Models\Reservation\Reservation', 'id_reservation', 'id_reservation');
     }

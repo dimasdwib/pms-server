@@ -58,7 +58,7 @@ class RoomController extends Controller
         return response()->json([
             'room_types' => RoomType::all(),
             'beds' => Bed::all(),
-            'rooms' => Room::all(),
+            'rooms' => RoomResource::collection(Room::forReservation($date_arrival, $date_departure)),
             'rates' => Rate::forReservation($date_arrival, $date_departure),
         ]);
     }

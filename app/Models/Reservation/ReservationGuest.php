@@ -3,6 +3,7 @@
 namespace App\Models\Reservation;
 
 use App\Models\BaseModel;
+use App\Models\Room\Room;
 
 class ReservationGuest extends BaseModel
 {
@@ -28,12 +29,33 @@ class ReservationGuest extends BaseModel
     public function checkin()
     {
         $this->date_checkin = date('Y-m-d H:i:s');
+        
+        $id_room = $this->reservation_room->id_room;
+        $id_reservation = $this->reservation_room->id_reservation;
+
+        $room = Room::findOrFail($id_room);
+        // set room to occupied
+        $room->setToOccupied();
+        
+        // set room to dirty
+        $room->setToDirty();
+
+        // set reservation to definite
+        $reservation = Reservation::findOrFail($id_reservation);
+        $reservation->setToDefinite(); 
+
         return $this->save();
     }
 
     public function checkout()
     {
         $this->date_checkout = date('Y-m-d H:i:s');
+
+        $id_room = $this->reservation_room->id_room;
+        
+        // set room to vacant
+        Room::findOrFail($id_room)->setToVacant();
+
         return $this->save();
     }
 }

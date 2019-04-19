@@ -12,8 +12,10 @@ use App\Models\Reservation\ReservationGuest;
 use App\Models\Reservation\ReservationGuestResource;
 use App\Models\Reservation\ReservationResource;
 use App\Models\Reservation\ReservationRoomResource;
+use App\Models\Reservation\InHouseResource;
 use App\Models\Transaction\RoomCharge;
 use App\Models\Transaction\Bill;
+use App\Models\Transaction\Transaction;
 use App\Models\Transaction\ReservationBill;
 use App\Models\Rate\Rate;
 use DB;
@@ -31,7 +33,7 @@ class ReservationController extends Controller
             $limit = (Int) $request->limit;
         }
         
-        $reservations = Reservation::paginate($limit);
+        $reservations = Reservation::orderBy('id_reservation', 'desc')->paginate($limit);
         return ReservationResource::collection($reservations);
     }
 
@@ -96,6 +98,18 @@ class ReservationController extends Controller
         $bill = new Bill;
         $bill->id_guest = $reservation->id_booker;
         $bill->save();
+
+        if ($request->payments != null) {
+            foreach($request->payments as $payment) {
+                $transaction = new Transaction;
+                $transaction->id_bill = $bill->id_bill;
+                $transaction->date = date('Y-m-d H:i:s');
+                $transaction->amount_nett = $payment['amount'];
+                $transaction->type = 'cr'; // credit
+                $transaction->description = 'Payment - '.date('Y-m-d'); // credit
+                $transaction->save();
+            }
+        }
 
         $reservation_bill = new ReservationBill;
         $reservation_bill->id_reservation = $reservation->id_reservation;
@@ -193,6 +207,23 @@ class ReservationController extends Controller
 
         DB::rollBack();
         return $this->response->errorInternal();
+    }
+
+    /**
+     * Display list of guest in house
+     * 
+     */
+    public function inhouse(Request $request)
+    {
+        $limit = null;
+        if ($request->limit != null) {
+            $limit = (Int) $request->limit;
+        }
+        
+        $reservation_rooms = ReservationRoom::inHouse()->paginate($limit);
+
+
+        return InHouseResource::collection($reservation_rooms);
     }
     
 }
