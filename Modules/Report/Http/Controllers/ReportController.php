@@ -5,68 +5,62 @@ namespace Modules\Report\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use App\Models\Report\ReportReservationListResource;
+use App\Models\Report\ReportArrivalListResource;
+use App\Models\Report\ReportDepartureListResource;
+use App\Models\Report\ReportGuestInHouseResource;
+use App\Models\Report\ReportRoomStatusResource;
+use App\Models\Reservation\Reservation;
+use App\Models\Room\Room;
+use App\Models\Reservation\ReservationGuest;
 
 class ReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Response
-     */
-    public function index()
+   
+    public function reservation_list()
     {
-        return view('report::index');
+        $reservation = Reservation::limit(20)->orderBy('id_reservation', 'desc')->get();
+        return ReportReservationListResource::collection($reservation);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Response
-     */
-    public function create()
+    public function arrival_list()
     {
-        return view('report::create');
+        $now = date('Y-m-d');
+        $arrival_list = ReservationGuest::limit(20)
+                        ->where('date_arrival', $now)
+                        ->orderBy('id_reservation_room_guest', 'desc')
+                        ->get();
+
+        return ReportArrivalListResource::collection($arrival_list);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param  Request $request
-     * @return Response
-     */
-    public function store(Request $request)
+    public function departure_list()
     {
+        $now = date('Y-m-d');
+        $departure_list = ReservationGuest::limit(20)
+                        ->where('date_departure', $now)
+                        ->orderBy('id_reservation_room_guest', 'desc')
+                        ->get();
+
+        return ReportDepartureListResource::collection($departure_list);
     }
 
-    /**
-     * Show the specified resource.
-     * @return Response
-     */
-    public function show()
+    public function guest_in_house()
     {
-        return view('report::show');
+        $now = date('Y-m-d');
+        $guest_in_house = ReservationGuest::limit(20)
+                            ->whereNotNull('date_checkin')
+                            ->whereNull('date_checkout')
+                            ->orderBy('id_reservation_room_guest', 'desc')
+                            ->get();
+
+        return ReportGuestInHouseResource::collection($guest_in_house);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @return Response
-     */
-    public function edit()
+    public function room_status()
     {
-        return view('report::edit');
+        $room = Room::all();
+        return ReportRoomStatusResource::collection($room);
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param  Request $request
-     * @return Response
-     */
-    public function update(Request $request)
-    {
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @return Response
-     */
-    public function destroy()
-    {
-    }
 }

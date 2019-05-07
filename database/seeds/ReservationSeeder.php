@@ -175,6 +175,7 @@ class ReservationSeeder extends Seeder
         $reservation_bill = new ReservationBill;
         $reservation_bill->id_reservation = $reservation->id_reservation;
         $reservation_bill->id_bill = $bill->id_bill;
+        $reservation_bill->status = 'open';
         $reservation_bill->save();
     }
 }

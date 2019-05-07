@@ -18,13 +18,10 @@ RouteApi::version('v1', function() {
 
         RouteApi::group(['middleware' => 'jwt.auth'], function() {
 
+            RouteApi::put('/clean/{id}', 'HouseKeepingController@cleanRoom');
+
             // resources
-            RouteApi::post('/', 'HouseKeepingController@store');
             RouteApi::get('/', 'HouseKeepingController@index');
-            RouteApi::get('/all', 'HouseKeepingController@all');
-            RouteApi::get('/{id}', 'HouseKeepingController@show');
-            RouteApi::put('/{id}', 'HouseKeepingController@update');
-            RouteApi::delete('/{id}', 'HouseKeepingController@destroy');
 
         });
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction\RoomCharge;
 use App\Models\Transaction\Transaction;
 use App\Models\Transaction\Bill;
+use App\Models\Transaction\ReservationBill;
 use DB;
 
 class TransactionController extends Controller
@@ -100,6 +101,7 @@ class TransactionController extends Controller
 
     /**
      * add payment
+     * 
      */
     public function add_payment(Request $request, $id_bill)
     { 
@@ -113,8 +115,8 @@ class TransactionController extends Controller
         $transaction->id_bill = $id_bill;
         $transaction->date = date('Y-m-d H:i:s');
         $transaction->amount_nett = $request->amount;
-        $transaction->type = 'cr'; // credit
-        $transaction->description = 'Payment - '.date('Y-m-d'); // credit
+        $transaction->id_transaction_category = 2; // deposit
+        $transaction->description = 'Deposit - '.date('Y-m-d'); // deposit
 
         if ($transaction->save()) {
             DB::commit();
@@ -124,6 +126,25 @@ class TransactionController extends Controller
             ]);
         }
 
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
+
+    /**
+     * Close reservation bill
+     * 
+     */
+    public function close_reservation_bill($id_bill)
+    {
+        $reservation_bill = ReservationBill::where('id_bill', $id_bill)->first();
+        DB::beginTransaction();
+        if ($reservation_bill->closeBill()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Folio has been closed',
+                'reservation_bill' => $reservation_bill,
+            ]);
+        }
         DB::rollBack();
         return $this->response->errorInternal();
     }

@@ -38,7 +38,7 @@ class ReservationResource extends JsonResource
 
         return [
             'id_reservation' => $this->id_reservation,
-            'number' => '000000'.$this->id_reservation,
+            'number' => $this->number(),
             'booker' => $this->booker,
             'rooms' => $rooms,
             'note' => $this->note,

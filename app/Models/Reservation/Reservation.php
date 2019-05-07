@@ -67,6 +67,7 @@ class Reservation extends BaseModel
         foreach($reservation_bills as $key_bill => $bill) {
             $bill_data = $bill->bill;
             $bill_data->setNumber($bill->number());
+            $bill_data->setStatus($bill->status);
             $data = new BillResource($bill_data);
             $bills[] = $data;
         }

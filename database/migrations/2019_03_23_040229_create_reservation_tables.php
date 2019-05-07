@@ -73,17 +73,28 @@ class CreateReservationTables extends Migration
             $table->foreign('id_reservation')->references('id_reservation')->on('reservations')->onDelete('cascade');;
         });
 
+        Schema::create('transaction_categories', function (Blueprint $table) {
+            $table->increments('id_transaction_category');
+            $table->string('code', 20);
+            $table->string('name');
+            $table->enum('pos', ['dr', 'cr']);
+            $table->enum('is_default', [0, 1])->default(0);
+            $table->timestamps();
+        });
+
         Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id_transaction');
             $table->unsignedInteger('id_bill');
+            $table->unsignedInteger('id_transaction_category');
             $table->dateTime('date');
             $table->decimal('amount_nett', 19, 4)->default(0);
             $table->string('description');
-            $table->enum('type', ['db', 'cr']);
             $table->timestamps();
             
             $table->foreign('id_bill')->references('id_bill')->on('bills')->onDelete('cascade');
+            $table->foreign('id_transaction_category')->references('id_transaction_category')->on('transaction_categories')->onDelete('restrict');
         });
+
         //--------------------------------------------------------------------------------------------------------------------------
 
         // reservation room charges

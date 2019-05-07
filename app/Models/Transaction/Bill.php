@@ -25,6 +25,10 @@ class Bill extends BaseModel
       $this->number = $number;
     }
 
+    public function setStatus($status) {
+      $this->status = $status;
+    }
+
     public function transactions()
     {
       return $this->hasMany('App\Models\Transaction\Transaction', 'id_bill', 'id_bill');

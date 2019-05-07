@@ -25,6 +25,22 @@ class HouseKeepingController extends Controller
     }
 
     /**
+     * Clean selected room
+     */
+    public function cleanRoom($idRoom)
+    {
+        $room = Room::findOrFail($idRoom);
+        if ($room->setToClean()) {
+            return response()->json([
+                'message' => 'Room status has been updated',
+                'status' => 'success'
+            ]);
+        }
+
+        return $this->response->errorInternal();
+    }
+
+    /**
      * Show the form for creating a new resource.
      * @return Response
      */

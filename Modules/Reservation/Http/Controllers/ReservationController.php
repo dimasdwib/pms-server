@@ -105,8 +105,8 @@ class ReservationController extends Controller
                 $transaction->id_bill = $bill->id_bill;
                 $transaction->date = date('Y-m-d H:i:s');
                 $transaction->amount_nett = $payment['amount'];
-                $transaction->type = 'cr'; // credit
-                $transaction->description = 'Payment - '.date('Y-m-d'); // credit
+                $transaction->id_transaction_category = 2; // deposit
+                $transaction->description = 'Deposit - '.date('Y-m-d');
                 $transaction->save();
             }
         }
@@ -114,6 +114,7 @@ class ReservationController extends Controller
         $reservation_bill = new ReservationBill;
         $reservation_bill->id_reservation = $reservation->id_reservation;
         $reservation_bill->id_bill = $bill->id_bill;
+        $reservation_bill->status = 'open'; // open bill
         $reservation_bill->save();
 
         if ($reservation->id_reservation) {

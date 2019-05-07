@@ -10,7 +10,3 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::prefix('roomtype')->group(function() {
-    Route::get('/', 'RoomTypeController@index');
-});

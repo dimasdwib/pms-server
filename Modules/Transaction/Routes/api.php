@@ -26,6 +26,7 @@ RouteApi::version('v1', function() {
 
             // resources
             RouteApi::post('/', 'TransactionController@store');
+            RouteApi::post('/close_reservation_bill/{id_bill}', 'TransactionController@close_reservation_bill');
             RouteApi::post('/post_room_charge/{id_room_charge}', 'TransactionController@post_room_charge');
             RouteApi::post('/payment/{id_bill}', 'TransactionController@add_payment');
             

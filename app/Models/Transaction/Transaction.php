@@ -25,9 +25,14 @@ class Transaction extends BaseModel
         return $this->belongsTo('App\Models\Transaction\Bill', 'id_bill', 'id_bill');
     }
 
-    public function getDbAmountNettAttribute()
+    public function transaction_category()
     {
-        if ($this->type == 'db') {
+        return $this->belongsTo('App\Models\Transaction\TransactionCategory', 'id_transaction_category', 'id_transaction_category');
+    }
+
+    public function getDrAmountNettAttribute()
+    {
+        if ($this->transaction_category->pos == 'dr') {
             return $this->amount_nett;
         }
         return 0;
@@ -35,7 +40,7 @@ class Transaction extends BaseModel
 
     public function getCrAmountNettAttribute()
     {
-        if ($this->type == 'cr') {
+        if ($this->transaction_category->pos == 'cr') {
             return $this->amount_nett;
         }
         return 0;

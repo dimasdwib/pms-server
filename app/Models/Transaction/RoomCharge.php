@@ -49,7 +49,7 @@ class RoomCharge extends BaseModel
         $transaction->id_bill = $id_bill;
         $transaction->date = date('Y-m-d H:i:s');
         $transaction->amount_nett = $this->amount_nett;
-        $transaction->type = 'db'; // debit
+        $transaction->id_transaction_category = 1; // room charge
         $transaction->description = $room->number.' - '.$rate->code.' - '.$this->date;
         $transaction->save();
 
