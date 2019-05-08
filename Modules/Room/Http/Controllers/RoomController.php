@@ -28,7 +28,7 @@ class RoomController extends Controller
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
-        
+
         $rooms = Room::paginate($limit);
         return RoomResource::collection($rooms);
     }
@@ -83,7 +83,7 @@ class RoomController extends Controller
         $room->number = $request->number;
         $room->phone = $request->phone;
         $room->description = $request->description;
-        
+
         DB::beginTransaction();
         if ($room->save()) {
             DB::commit();
@@ -126,7 +126,7 @@ class RoomController extends Controller
         $room->number = $request->number;
         $room->phone = $request->phone;
         $room->description = $request->description;
-        
+
         DB::beginTransaction();
         if ($room->save()) {
             DB::commit();
@@ -147,7 +147,7 @@ class RoomController extends Controller
     public function destroy($id)
     {
         DB::beginTransaction();
-        $room = Guest::findOrFail($id);
+        $room = Room::findOrFail($id);
         if ($room->delete()) {
             DB::commit();
             return response()->json([

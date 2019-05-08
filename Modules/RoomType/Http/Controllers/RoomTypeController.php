@@ -22,7 +22,7 @@ class RoomTypeController extends Controller
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
-        
+
         $room_types = RoomType::paginate($limit);
         return response()->json($room_types);
     }
@@ -51,7 +51,7 @@ class RoomTypeController extends Controller
         ]);
 
         $room_type = new RoomType;
-        $room_type->order = $request->order;
+        $room_type->order = $request->order == null ? 0 : $request->order;
         $room_type->code = $request->code;
         $room_type->name = $request->name;
         $room_type->size = $request->size;
@@ -59,7 +59,7 @@ class RoomTypeController extends Controller
         $room_type->max_adult = $request->max_adult;
         $room_type->max_child = $request->max_child;
         $room_type->images = $request->images;
-        
+
         DB::beginTransaction();
         if ($room_type->save()) {
             DB::commit();
@@ -98,7 +98,7 @@ class RoomTypeController extends Controller
         ]);
 
         $room_type = RoomType::findOrFail($id);
-        $room_type->order = $request->order;
+        $room_type->order = $request->order == null ? 0 : $request->order;
         $room_type->code = $request->code;
         $room_type->name = $request->name;
         $room_type->size = $request->size;
@@ -106,7 +106,7 @@ class RoomTypeController extends Controller
         $room_type->max_adult = $request->max_adult;
         $room_type->max_child = $request->max_child;
         $room_type->images = $request->images;
-        
+
         DB::beginTransaction();
         if ($room_type->save()) {
             DB::commit();

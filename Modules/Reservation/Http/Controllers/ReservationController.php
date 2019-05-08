@@ -32,7 +32,7 @@ class ReservationController extends Controller
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
-        
+
         $reservations = Reservation::orderBy('id_reservation', 'desc')->paginate($limit);
         return ReservationResource::collection($reservations);
     }
@@ -59,14 +59,14 @@ class ReservationController extends Controller
         $reservation->note = $request->note;
         $reservation->adult = $request->adult;
         $reservation->child = $request->child;
-        
+
         DB::beginTransaction();
         $reservation->save();
 
         foreach($request->rooms as $room) {
             $reservation_room = new ReservationRoom([
                 'id_room' => $room['id_room'],
-                'id_reservation' => $reservation->id_reservation    
+                'id_reservation' => $reservation->id_reservation
             ]);
             $reservation_room->save();
             foreach($room['guests'] as $guest) {
@@ -137,7 +137,7 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         $reservation = $reservation->detail();
-    
+
         return $reservation;
     }
 
@@ -154,13 +154,23 @@ class ReservationController extends Controller
      * Remove the specified resource from storage.
      * @return Response
      */
-    public function destroy()
+    public function destroy($id)
     {
+        DB::beginTransaction();
+        $reservation = Reservation::findOrFail($id);
+        if ($reservation->delete()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Reservation has been deleted successfully',
+            ]);
+        }
+        DB::rollBack();
+        return $this->response->errorInternal();
     }
 
     /**
      * Get reservation room
-     * 
+     *
      */
     public function room($id_reservation_room)
     {
@@ -170,7 +180,7 @@ class ReservationController extends Controller
 
     /**
      * Checkin the guest
-     * 
+     *
      */
     public function checkin($id_reservation_room_guest)
     {
@@ -191,7 +201,7 @@ class ReservationController extends Controller
 
     /**
      * Checkout the guest
-     * 
+     *
      */
     public function checkout($id_reservation_room_guest)
     {
@@ -212,7 +222,7 @@ class ReservationController extends Controller
 
     /**
      * Display list of guest in house
-     * 
+     *
      */
     public function inhouse(Request $request)
     {
@@ -220,11 +230,11 @@ class ReservationController extends Controller
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
-        
+
         $reservation_rooms = ReservationRoom::inHouse()->paginate($limit);
 
 
         return InHouseResource::collection($reservation_rooms);
     }
-    
+
 }
