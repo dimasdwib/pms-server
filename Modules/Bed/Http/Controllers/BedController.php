@@ -25,7 +25,7 @@ class BedController extends Controller
         
         $beds = Bed::paginate($limit);
         return BedResource::collection($beds);
-    }
+    } 
 
     /**
      * Display all resource

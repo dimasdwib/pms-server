@@ -1,15 +1,15 @@
 <?php
 
-namespace Modules\Rate\Http\Controllers;
+namespace Modules\Floor\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use App\Models\Rate\Rate;
-use App\Models\Rate\RateResource;
+use App\Models\Room\Floor;
+use App\Models\Room\FloorResource;
 use DB;
 
-class RateController extends Controller
+class FloorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,8 +22,17 @@ class RateController extends Controller
             $limit = (Int) $request->limit;
         }
         
-        $rates = Rate::paginate($limit);
-        return RateResource::collection($rates);   
+        $floors = Floor::orderBy('order', 'asc')
+                        ->paginate($limit);
+        return FloorResource::collection($floors);
+    }
+
+        /**
+     * Display all resource
+     * @return Response
+     */
+    public function all() {
+        return FloorResource::collection(Floor::all());
     }
 
 
@@ -34,27 +43,22 @@ class RateController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
-            'code' => 'required|max:10',
-            'name' => 'required|max:100',
-            'id_room_type' => 'required',
-            'amount_nett' => 'required|numeric',
+            'order' => 'numeric',
+            'name' => 'required|max:20',
         ]);
 
-        $rate = new Rate;
-        $rate->code = $request->code;
-        $rate->name = $request->name;
-        $rate->description = $request->description;
-        $rate->id_room_type = $request->id_room_type;
-        $rate->amount_nett = $request->amount_nett;
+        $floor = new Floor;
+        $floor->order = $request->order;
+        $floor->name = $request->name;
+        $floor->description = $request->description;
 
         DB::beginTransaction();
-        if ($rate->save()) {
+        if ($floor->save()) {
             DB::commit();
             return response()->json([
-                'message' => 'Rate has been created successfully',
-                'bed' => new RateResource($rate),
+                'message' => 'Floor has been created successfully',
+                'floor' => new FloorResource($floor),
             ]);
         }
 
@@ -68,9 +72,8 @@ class RateController extends Controller
      */
     public function show($id)
     {
-        return new RateResource(Rate::findOrFail($id));
+        return new FloorResource(Floor::findOrFail($id));
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -80,25 +83,21 @@ class RateController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'code' => 'required|max:10',
-            'name' => 'required|max:100',
-            'id_room_type' => 'required',
-            'amount_nett' => 'required|numeric',
+            'order' => 'numeric',
+            'name' => 'required|max:20',
         ]);
 
-        $rate = Rate::findOrFail($id);
-        $rate->code = $request->code;
-        $rate->name = $request->name;
-        $rate->description = $request->description;
-        $rate->id_room_type = $request->id_room_type;
-        $rate->amount_nett = $request->amount_nett;
+        $floor = Floor::findOrFail($id);
+        $floor->order = $request->order;
+        $floor->name = $request->name;
+        $floor->description = $request->description;
 
         DB::beginTransaction();
-        if ($rate->save()) {
+        if ($floor->save()) {
             DB::commit();
             return response()->json([
-                'message' => 'Rate has been updated successfully',
-                'bed' => new RateResource($rate),
+                'message' => 'Floor has been updated successfully',
+                'floor' => new FloorResource($floor),
             ]);
         }
 
@@ -113,11 +112,11 @@ class RateController extends Controller
     public function destroy($id)
     {
         DB::beginTransaction();
-        $rate = Rate::findOrFail($id);
-        if ($rate->delete()) {
+        $floor = Floor::findOrFail($id);
+        if ($floor->delete()) {
             DB::commit();
             return response()->json([
-                'message' => 'Rate has been deleted successfully',
+                'message' => 'Floor has been deleted successfully',
             ]);
         }
         DB::rollBack();

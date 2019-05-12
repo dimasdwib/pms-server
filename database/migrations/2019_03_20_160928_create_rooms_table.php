@@ -27,7 +27,7 @@ class CreateRoomsTable extends Migration
             $table->increments('id_floor');
             $table->unsignedInteger('id_zone')->nullable();
             $table->tinyInteger('order')->default(0);
-            $table->string('number');
+            $table->string('name');
             $table->string('description')->nullable();
             $table->timestamps();
 
