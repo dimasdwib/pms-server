@@ -33,4 +33,26 @@ class Bill extends BaseModel
     {
       return $this->hasMany('App\Models\Transaction\Transaction', 'id_bill', 'id_bill');
     }
+
+    public function getBalance()
+    {
+      $transactions = $this->transactions;
+        $dr_total_nett = 0;
+        $cr_total_nett = 0;
+        $balance = 0;
+        foreach($transactions as $key => $transaction) {
+            $transactions[$key]->dr_amount_nett = $transaction->dr_amount_nett;
+            $transactions[$key]->cr_amount_nett = $transaction->cr_amount_nett;
+            $transactions[$key]->pos = $transaction->transaction_category->pos;
+            if ($transaction->transaction_category->pos == 'dr') {
+                $dr_total_nett += $transaction->dr_amount_nett; 
+                $balance += $transaction->dr_amount_nett;
+            } else {
+                $cr_total_nett += $transaction->cr_amount_nett;
+                $balance -= $transaction->cr_amount_nett; 
+            }
+        }
+      
+        return $balance;
+    }
 }

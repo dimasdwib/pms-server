@@ -40,7 +40,7 @@ class TransactionCategoriesSeeder extends Seeder
                 'code' => 'refund',
                 'name' => 'Refund',
                 'is_default' => 1,
-                'pos' => 'cr',
+                'pos' => 'dr',
             ],
         ];
 

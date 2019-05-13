@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction\RoomCharge;
 use App\Models\Transaction\Transaction;
 use App\Models\Transaction\Bill;
+use App\Models\Transaction\BillResource;
 use App\Models\Transaction\ReservationBill;
 use DB;
 
@@ -137,6 +138,17 @@ class TransactionController extends Controller
     public function close_reservation_bill($id_bill)
     {
         $reservation_bill = ReservationBill::where('id_bill', $id_bill)->first();
+        $balance = $reservation_bill->bill->getBalance();
+        if ($balance < 0) {
+            $transaction = new Transaction;
+            $transaction->id_bill = $id_bill;
+            $transaction->date = date('Y-m-d H:i:s');
+            $transaction->amount_nett = $balance * -1;
+            $transaction->id_transaction_category = 4; // refund
+            $transaction->description = 'Refund - '.date('Y-m-d'); // refund
+            $transaction->save();
+        }
+
         DB::beginTransaction();
         if ($reservation_bill->closeBill()) {
             DB::commit();
