@@ -50,7 +50,7 @@ class RoomCharge extends BaseModel
         $transaction->date = date('Y-m-d H:i:s');
         $transaction->amount_nett = $this->amount_nett;
         $transaction->id_transaction_category = 1; // room charge
-        $transaction->description = $room->number.' - '.$rate->code.' - '.$this->date;
+        $transaction->description = $room->number.' - '.$rate->code.' - '.date('d-m-Y', strtotime($this->date));
         $transaction->save();
 
         // update room charge status

@@ -25,11 +25,17 @@ class RoomController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
 
-        $rooms = Room::paginate($limit);
+        $rooms = Room::searchByModel($search, [
+                        'this' => ['number', 'fo_status', 'hk_status'],
+                        'bed' => ['name', 'code'],
+                        'room_type' => ['name', 'code'],
+                    ])
+                    ->paginate($limit);
         return RoomResource::collection($rooms);
     }
 

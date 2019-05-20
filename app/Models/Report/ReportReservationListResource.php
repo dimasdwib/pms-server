@@ -16,6 +16,7 @@ class ReportReservationListResource extends JsonResource
     {
         return [
             'number' => $this->number(), 
+            'id_reservation' => $this->id_reservation, 
             'booker' => $this->booker,
             'status' => $this->status,
             'created_at' => (String) $this->created_at,

@@ -18,25 +18,25 @@ class Bill extends BaseModel
     ];
 
     public function guest() {
-      return $this->hasOne('App\Models\Guest\Guest', 'id_guest', 'id_guest');
+        return $this->hasOne('App\Models\Guest\Guest', 'id_guest', 'id_guest');
     }
 
     public function setNumber($number) {
-      $this->number = $number;
+        $this->number = $number;
     }
 
     public function setStatus($status) {
-      $this->status = $status;
+        $this->status = $status;
     }
 
     public function transactions()
     {
-      return $this->hasMany('App\Models\Transaction\Transaction', 'id_bill', 'id_bill');
+        return $this->hasMany('App\Models\Transaction\Transaction', 'id_bill', 'id_bill');
     }
 
     public function getBalance()
     {
-      $transactions = $this->transactions;
+        $transactions = $this->transactions;
         $dr_total_nett = 0;
         $cr_total_nett = 0;
         $balance = 0;
@@ -54,5 +54,18 @@ class Bill extends BaseModel
         }
       
         return $balance;
+    }
+
+    public function getTotal($code)
+    {
+        $transactions = $this->transactions;
+        $total = 0;
+        foreach($transactions as $key => $transaction) {
+            if ($transaction->transaction_category->code == $code) {
+              $total += $transaction->dr_amount_nett;
+            }
+        }
+      
+        return $total;
     }
 }

@@ -23,6 +23,7 @@ RouteApi::version('v1', function() {
             RouteApi::get('/departure_list', 'ReportController@departure_list');
             RouteApi::get('/guest_in_house', 'ReportController@guest_in_house');
             RouteApi::get('/room_status', 'ReportController@room_status');
+            RouteApi::get('/folio_history', 'ReportController@folio_history');
 
         });
     });

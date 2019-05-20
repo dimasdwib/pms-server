@@ -10,16 +10,24 @@ use App\Models\Report\ReportArrivalListResource;
 use App\Models\Report\ReportDepartureListResource;
 use App\Models\Report\ReportGuestInHouseResource;
 use App\Models\Report\ReportRoomStatusResource;
+use App\Models\Report\ReportFolioHistoryResource;
 use App\Models\Reservation\Reservation;
 use App\Models\Room\Room;
 use App\Models\Reservation\ReservationGuest;
+use App\Models\Transaction\ReservationBill;
+use DB;
 
 class ReportController extends Controller
 {
    
-    public function reservation_list()
+    public function reservation_list(Request $request)
     {
-        $reservation = Reservation::limit(20)->orderBy('id_reservation', 'desc')->get();
+        $from = $request->from;
+        $to = $request->to;
+        $reservation = Reservation::whereDate('created_at', '>=', $from)
+                                    ->whereDate('created_at', '<=', $to)
+                                    ->orderBy('id_reservation', 'desc')
+                                    ->get();
         return ReportReservationListResource::collection($reservation);
     }
 
@@ -61,6 +69,24 @@ class ReportController extends Controller
     {
         $room = Room::all();
         return ReportRoomStatusResource::collection($room);
+    }
+
+    public function folio_history(Request $request)
+    {
+        $from = $request->from;
+        $to = $request->to;
+        $reservation_bill = ReservationBill::orderBy('id_reservation_bill', 'desc')
+                                            ->whereDate('created_at', '>=', $from)
+                                            ->whereDate('created_at', '<=', $to)
+                                            ->get();
+        $total = 0;
+        foreach($reservation_bill as $folio) {
+            $total += $folio->bill->getTotal('room_charge');
+        }
+        return [
+            'folios' => ReportFolioHistoryResource::collection($reservation_bill),
+            'total' => $total,
+        ];
     }
 
 }

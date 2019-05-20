@@ -18,11 +18,16 @@ class RateController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
         
-        $rates = Rate::paginate($limit);
+        $rates = Rate::searchByModel($search, [
+                        'this' => ['name', 'code', 'description', 'amount_nett'],
+                        'room_type' => ['name', 'code'],
+                    ])
+                    ->paginate($limit);
         return RateResource::collection($rates);   
     }
 

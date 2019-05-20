@@ -33,4 +33,5 @@ class ReservationRoom extends BaseModel
     public function reservation() {
         return $this->belongsTo('App\Models\Reservation\Reservation', 'id_reservation', 'id_reservation');
     }
+
 }

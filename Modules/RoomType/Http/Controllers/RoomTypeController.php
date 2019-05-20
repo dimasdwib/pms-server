@@ -19,11 +19,15 @@ class RoomTypeController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
 
-        $room_types = RoomType::paginate($limit);
+        $room_types = RoomType::searchByModel($search, [
+                                    'this' => ['name', 'code', 'size', 'description', 'max_adult', 'max_child']
+                                ])
+                                ->paginate($limit);
         return response()->json($room_types);
     }
 

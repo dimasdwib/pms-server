@@ -16,6 +16,8 @@ class ReportGuestInHouseResource extends JsonResource
     {
         return [
             'number' => $this->reservation_room->reservation->number(),
+            'id_reservation' => $this->reservation_room->reservation->id_reservation,
+            'id_reservation_room' => $this->reservation_room->id_reservation_room,
             'room' => $this->reservation_room->room->number,
             'guest' => $this->guest,
             'checkin' => $this->date_checkin,

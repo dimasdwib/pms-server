@@ -19,11 +19,15 @@ class BedController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
         
-        $beds = Bed::paginate($limit);
+        $beds = Bed::searchByModel($search, [
+                        'this' => ['name', 'description', 'code']
+                    ])
+                    ->paginate($limit);
         return BedResource::collection($beds);
     } 
 

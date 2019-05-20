@@ -29,11 +29,17 @@ class ReservationController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
 
-        $reservations = Reservation::orderBy('id_reservation', 'desc')->paginate($limit);
+        $reservations = Reservation::orderBy('id_reservation', 'desc')
+                                    ->searchByModel($search, [
+                                        'this' => ['id_reservation', 'note'],
+                                        'booker' => ['name', 'email', 'phone'],
+                                    ])
+                                    ->paginate($limit);
         return ReservationResource::collection($reservations);
     }
 
@@ -227,11 +233,26 @@ class ReservationController extends Controller
     public function inhouse(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
 
-        $reservation_rooms = ReservationRoom::inHouse()->paginate($limit);
+        $reservation_rooms = ReservationRoom::searchByModel($search, [
+                                                'reservation' => ['id_reservation', 'created_at'],
+                                                'room' => ['number'],
+                                            ]);
+                                            
+
+        if ($search != null) {
+            $reservation_rooms->orWhereHas('reservation', function ($q) use ($search) {              
+                $q->whereHas('booker', function ($q2) use ($search) {
+                    $q2->where('name', 'like', '%'.$search.'%');
+                });
+            });
+        }
+
+        $reservation_rooms = $reservation_rooms->inhouse()->paginate($limit);
 
 
         return InHouseResource::collection($reservation_rooms);

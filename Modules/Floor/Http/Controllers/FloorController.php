@@ -18,11 +18,15 @@ class FloorController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
         
         $floors = Floor::orderBy('order', 'asc')
+                        ->searchByModel($search, [
+                            'this' => ['name', 'description'],
+                        ])
                         ->paginate($limit);
         return FloorResource::collection($floors);
     }

@@ -32,7 +32,6 @@ class DashboardController extends Controller
                                 ->pluck('total_amount_nett', 'date');
 
         $room_occupancy = ReservationGuest::where('date_checkin', '>=', $last_7days)
-                                        ->whereNotNull('date_checkout')
                                         ->get();
         $last_week_occupancy_chart = [];                        
         $last_week_revenue_chart = [];
@@ -50,7 +49,16 @@ class DashboardController extends Controller
             }
 
             foreach($room_occupancy as $occ) {
-                if (date('Y-m-d', strtotime($occ->date_checkin)) <= $date && date('Y-m-d', strtotime($occ->date_checkout)) >= $date) {
+                if (date('Y-m-d', strtotime($occ->date_checkin)) == $date && $occ->date_checkout == null) {
+                    if (isset($last_week_occupancy_chart[$date])) {
+                        $last_week_occupancy_chart[$date]['occ'] += 1;
+                    } else {
+                        $last_week_occupancy_chart[$date] = [
+                            'date' => $date,
+                            'occ' => 1,
+                        ];
+                    }
+                } else if (date('Y-m-d', strtotime($occ->date_checkin)) <= $date && date('Y-m-d', strtotime($occ->date_checkout)) >= $date) {
                     if (isset($last_week_occupancy_chart[$date])) {
                         $last_week_occupancy_chart[$date]['occ'] += 1;
                     } else {

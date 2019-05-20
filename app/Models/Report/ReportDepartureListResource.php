@@ -16,6 +16,7 @@ class ReportDepartureListResource extends JsonResource
     {
         return [
             'number' => $this->reservation_room->reservation->number(),
+            'id_reservation' => $this->reservation_room->reservation->id_reservation,
             'booker' => $this->reservation_room->reservation->booker, 
             'room' => $this->reservation_room->room->number,
             'guest' => $this->guest,

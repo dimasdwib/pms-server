@@ -19,11 +19,15 @@ class GuestController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
         
-        $guests = Guest::paginate($limit);
+        $guests = Guest::searchByModel($search, [
+                        'this' => ['email', 'name', 'title', 'address', 'phone']
+                    ])
+                    ->paginate($limit);
         return GuestResource::collection($guests);
     }
 
