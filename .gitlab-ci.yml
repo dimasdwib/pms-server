@@ -1,0 +1,37 @@
+image: tetraweb/php
+
+stages:
+  - production
+
+before_script:
+  - apt-get update
+  - apt-get install zip unzip
+
+  # composer
+  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  - php composer-setup.php
+  - php -r "unlink('composer-setup.php');"
+  - php composer.phar install
+  
+  # compress script
+  - tar -zcvf ../pms.tgz .
+
+
+  # ssh
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - mkdir -p ~/.ssh
+  - eval $(ssh-agent -s)
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+deploy_production:
+   stage: production
+   only:
+     - master
+   script:
+     - ssh-add <(echo "$AWS_SSH_KEY")
+     - ssh centos@3.0.122.222 "sudo rm -rf /usr/share/nginx/html/microservice/server-pms/*"
+     - scp ../pms.tgz centos@3.0.122.222:/usr/share/nginx/html/microservice/server-pms
+     - ssh centos@3.0.122.222 "cd /usr/share/nginx/html/microservice/server-pms && sudo tar -zxvf pms.tgz"
+     - ssh centos@3.0.122.222 "sudo rm /usr/share/nginx/html/microservice/server-pms/pms.tgz"
+     - ssh centos@3.0.122.222 "sudo cp /usr/share/nginx/html/microservice/server-env/.env.production.pms /usr/share/nginx/html/microservice/server-pms/.env"
+     - ssh centos@3.0.122.222 "cd /usr/share/nginx/html/microservice/server-pms && sudo chmod 777 -R storage"
