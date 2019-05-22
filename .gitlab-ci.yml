@@ -1,4 +1,4 @@
-image: tetraweb/php
+image: roadiz/php72-runner
 
 stages:
   - production
