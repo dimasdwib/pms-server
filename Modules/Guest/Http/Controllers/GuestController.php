@@ -19,20 +19,34 @@ class GuestController extends Controller
     public function index(Request $request)
     {
         $limit = null;
+        $search = $request->search;
         if ($request->limit != null) {
             $limit = (Int) $request->limit;
         }
         
-        $guests = Guest::paginate($limit);
-        return response()->json($guests);
+        $guests = Guest::searchByModel($search, [
+                        'this' => ['email', 'name', 'title', 'address', 'phone']
+                    ])
+                    ->paginate($limit);
+        return GuestResource::collection($guests);
     }
 
     /**
      * Display all resource
      * @return Response
      */
-    public function all() {
-        return Guest::all();
+    public function all(Request $request) {
+        if ($request->search != '') {
+            $search = $request->search;
+            $guests = Guest::where('name', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%$search%")
+                        ->orWhere('phone', 'like', "%$search%")
+                        ->orWhere('idcard', 'like', "%$search%")
+                        ->get();
+            return GuestResource::collection($guests);
+        }
+
+        return GuestResource::collection(Guest::all());
     }
 
     /**

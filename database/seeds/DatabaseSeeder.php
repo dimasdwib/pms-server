@@ -14,5 +14,12 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         $this->call(PermissionGroupSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(GuestSeeder::class);
+        $this->call(RoomTypeSeeder::class);
+        $this->call(BedSeeder::class);
+        $this->call(RoomSeeder::class);
+        $this->call(RateSeeder::class);
+        $this->call(TransactionCategoriesSeeder::class);
+        $this->call(ReservationSeeder::class);
     }
 }

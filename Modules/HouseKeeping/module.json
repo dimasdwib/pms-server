@@ -1,0 +1,14 @@
+{
+    "name": "HouseKeeping",
+    "alias": "housekeeping",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\HouseKeeping\\Providers\\HouseKeepingServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
