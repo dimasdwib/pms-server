@@ -258,4 +258,102 @@ class ReservationController extends Controller
         return InHouseResource::collection($reservation_rooms);
     }
 
+    /**
+     * Change booker 
+     * 
+     */
+    public function booker($id, Request $request) 
+    {   
+        $request->validate([
+            'id_guest' => 'required|numeric',
+        ]);
+
+        $id_booker = $request->id_guest;
+        $reservation = Reservation::findOrFail($id);
+        $reservation->id_booker = $id_booker;
+
+        DB::beginTransaction();
+        if ($reservation->save()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Booker has been updated successfully',
+                'reservation' => new ReservationResource($reservation),
+            ]);
+        }
+
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
+
+    /**
+     * Change note 
+     * 
+     */
+    public function note($id, Request $request) 
+    {   
+        $note = $request->note;
+        $reservation = Reservation::findOrFail($id);
+        $reservation->note = $note;
+
+        DB::beginTransaction();
+        if ($reservation->save()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Note has been updated successfully',
+                'reservation' => new ReservationResource($reservation),
+            ]);
+        }
+
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
+    
+    /**
+     * Update room
+     */
+    public function update_room($id, Request $request) 
+    {   
+        $request->validate([
+            'id_reservation_room' => 'required|numeric',
+            'id_room' => 'required|numeric',
+        ]);
+
+        $reservation_room = ReservationRoom::findOrFail($id);
+        $reservation_room->id_room = $request->id_room;
+        
+        DB::beginTransaction();
+        if ($reservation_room->save()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Room has been updated successfully',
+                'reservation_room' => new ReservationRoomResource($reservation_room),
+            ]);
+        }
+
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
+
+    /**
+     * Delete room
+     */
+    public function delete_room($id) 
+    {   
+        $request->validate([
+            'id_reservation_room' => 'required|numeric',
+        ]);
+
+        $reservation_room = ReservationRoom::findOrFail($id);
+        
+        DB::beginTransaction();
+        if ($reservation_room->delete()) {
+            DB::commit();
+            return response()->json([
+                'message' => 'Room has been deleted successfully',
+            ]);
+        }
+
+        DB::rollBack();
+        return $this->response->errorInternal();
+    }
 }
